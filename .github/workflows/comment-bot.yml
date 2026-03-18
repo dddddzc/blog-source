@@ -37,7 +37,7 @@ jobs:
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY: dddddzc/dddddzc.github.io
           DISCUSSION_CATEGORY_ID: DIC_kwDORgI73s4C3201
           BOT_MODE: ${{ github.event.inputs.dry_run == 'true' && 'dry-run' || 'production' }}
         run: |
