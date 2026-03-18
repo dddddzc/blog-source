@@ -1,0 +1,44 @@
+name: Comment Bot
+
+on:
+  schedule:
+    # 每小时执行一次
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    # 支持手动触发
+    inputs:
+      dry_run:
+        description: 'Dry run mode (only log, no actual reply)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  comment-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/comment-bot/requirements.txt
+
+      - name: Run comment bot
+        env:
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          DASHSCOPE_API_KEY: ${{ secrets.DASHSCOPE_API_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          DISCUSSION_CATEGORY_ID: DIC_kwDORgI73s4C3201
+          BOT_MODE: ${{ github.event.inputs.dry_run == 'true' && 'dry-run' || 'production' }}
+        run: |
+          python scripts/comment-bot/main.py

@@ -1,0 +1,125 @@
+"""
+AI 回复生成模块
+使用阿里云百炼平台的 GLM-5 模型
+"""
+import dashscope
+from dashscope import Generation
+from typing import Optional
+
+
+class AIResponder:
+    """AI 回复生成器"""
+
+    def __init__(self, api_key: str, model: str = "glm-4"):
+        """
+        初始化 AI 回复生成器
+
+        Args:
+            api_key: 阿里云百炼 API Key
+            model: 模型名称（glm-4 或 glm-4-plus 等）
+        """
+        self.api_key = api_key
+        self.model = model
+        dashscope.api_key = api_key
+
+    def generate_response(
+        self,
+        prompt: str,
+        enable_search: bool = True,
+        max_tokens: int = 500,
+    ) -> str:
+        """
+        生成回复
+
+        Args:
+            prompt: 提示词
+            enable_search: 是否启用联网搜索
+            max_tokens: 最大生成 token 数
+
+        Returns:
+            生成的回复文本
+        """
+        try:
+            response = Generation.call(
+                model=self.model,
+                prompt=prompt,
+                enable_search=enable_search,
+                max_tokens=max_tokens,
+                result_format="text",
+            )
+
+            if response.status_code == 200:
+                return response.output.text.strip()
+            else:
+                raise Exception(f"API 调用失败: {response.code} - {response.message}")
+
+        except Exception as e:
+            print(f"AI 生成失败: {e}")
+            raise
+
+    def generate_comment_reply(
+        self,
+        comment: str,
+        related_posts: str = "",
+        blog_author: str = "dddddzc",
+    ) -> str:
+        """
+        生成评论回复
+
+        Args:
+            comment: 评论内容
+            related_posts: 相关文章内容
+            blog_author: 博客作者名称
+
+        Returns:
+            回复文本
+        """
+        prompt = f"""你是一个技术博客的智能助手，负责回复读者的评论。
+
+## 背景信息
+- 博客作者：{blog_author}
+- 博客地址：https://dddddzc.github.io
+- 你的身份：博客作者的 AI 助手
+
+## 相关文章内容
+{related_posts if related_posts else "暂无相关文章"}
+
+## 读者评论
+{comment}
+
+## 回复要求
+1. 语气友好、专业
+2. 如果问题在文章中有答案，优先引用文章内容
+3. 如果需要补充信息，可以引用搜索结果
+4. 如果不确定答案，诚实说明并建议读者查阅其他资源
+5. 回复控制在 200 字以内
+6. 使用中文回复
+7. 回复开头说明你是 AI 助手
+
+请直接输出回复内容，不要包含其他说明。"""
+
+        return self.generate_response(prompt, enable_search=True, max_tokens=300)
+
+
+# 用于测试
+if __name__ == "__main__":
+    import os
+
+    api_key = os.getenv("DASHSCOPE_API_KEY")
+    if not api_key:
+        print("请设置 DASHSCOPE_API_KEY 环境变量")
+        exit(1)
+
+    responder = AIResponder(api_key)
+
+    # 测试分类
+    test_prompt = "请判断这条评论的类型：'博主你好，请问这个怎么安装？'"
+    result = responder.generate_response(test_prompt, enable_search=False)
+    print(f"分类结果: {result}")
+
+    # 测试回复生成
+    reply = responder.generate_comment_reply(
+        comment="请问 Hexo 怎么部署到 GitHub Pages？",
+        related_posts="## My First Blog\n\n介绍了 Hexo + GitHub 搭建博客的过程...",
+    )
+    print(f"生成的回复: {reply}")
