@@ -75,7 +75,7 @@ class GitHubClient:
 
         # 查询指定分类下的 Discussions
         query = """
-        query($owner: String!, $repo: String!, $categoryId: ID!, $since: DateTime) {
+        query($owner: String!, $repo: String!, $categoryId: ID!) {
             repository(owner: $owner, name: $repo) {
                 discussions(categoryId: $categoryId, first: 50, orderBy: {field: UPDATED_AT, direction: DESC}) {
                     nodes {
@@ -83,7 +83,7 @@ class GitHubClient:
                         number
                         title
                         url
-                        comments(first: 100, orderBy: {field: UPDATED_AT, direction: DESC}) {
+                        comments(first: 100) {
                             nodes {
                                 id
                                 body
@@ -110,7 +110,6 @@ class GitHubClient:
             "owner": self.owner,
             "repo": self.repo,
             "categoryId": self.category_id,
-            "since": since,
         }
 
         data = self._query(query, variables)
