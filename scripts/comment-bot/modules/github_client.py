@@ -61,12 +61,12 @@ class GitHubClient:
 
         return data.get("data", {})
 
-    def get_recent_comments(self, hours: int = 1) -> list[Comment]:
+    def get_recent_comments(self, hours: int = 24) -> list[Comment]:
         """
         获取最近指定小时内的评论
 
         Args:
-            hours: 查询最近多少小时内的评论
+            hours: 查询最近多少小时内的评论（默认 24 小时）
 
         Returns:
             评论列表
@@ -96,6 +96,7 @@ class GitHubClient:
                                         author {
                                             login
                                         }
+                                        body
                                     }
                                 }
                             }
@@ -125,22 +126,20 @@ class GitHubClient:
             for comment in discussion.get("comments", {}).get("nodes", []):
                 created_at = comment.get("createdAt", "")
 
-                # 只获取最近指定时间内的评论
-                if created_at < since:
-                    continue
-
                 # 排除博客作者自己的评论
                 author = comment.get("author", {}).get("login", "")
                 if author == self.blog_author:
                     continue
 
-                # 检查是否已有作者的回复
-                has_author_reply = any(
-                    reply.get("author", {}).get("login") == self.blog_author
+                # 检查是否已有 Bot 回复（通过检查回复内容是否包含 AI 助手标识）
+                # 因为 Bot 使用用户自己的账号，所以需要通过内容来判断
+                has_bot_reply = any(
+                    "AI 助手" in reply.get("body", "") or "AI助手" in reply.get("body", "")
                     for reply in comment.get("replies", {}).get("nodes", [])
                 )
 
-                if has_author_reply:
+                if has_bot_reply:
+                    print(f"跳过评论 {comment['id'][:20]}... (已有 Bot 回复)")
                     continue
 
                 comments.append(

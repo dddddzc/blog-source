@@ -66,7 +66,7 @@ def main():
 
     # 获取最近评论
     print("正在获取最近评论...")
-    comments = github_client.get_recent_comments(hours=1)
+    comments = github_client.get_recent_comments(hours=24)
     print(f"找到 {len(comments)} 条新评论")
     print()
 
