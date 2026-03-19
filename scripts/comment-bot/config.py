@@ -27,7 +27,9 @@ class Config:
     @classmethod
     def from_env(cls) -> "Config":
         """从环境变量加载配置"""
-        github_repo = os.getenv("GITHUB_REPOSITORY", "")
+        # 使用 DISCUSSIONS_REPOSITORY 而不是 GITHUB_REPOSITORY
+        # 因为 GITHUB_REPOSITORY 会被 GitHub Actions 自动设置为当前仓库
+        github_repo = os.getenv("DISCUSSIONS_REPOSITORY", "")
         owner, repo = github_repo.split("/") if "/" in github_repo else ("", "")
 
         return cls(
@@ -60,7 +62,7 @@ class Config:
         """验证配置是否完整"""
         required_fields = [
             ("PERSONAL_ACCESS_TOKEN", self.github_token),
-            ("GITHUB_REPOSITORY", self.github_repository),
+            ("DISCUSSIONS_REPOSITORY", self.github_repository),
             ("DISCUSSION_CATEGORY_ID", self.discussion_category_id),
             ("DASHSCOPE_API_KEY", self.dashscope_api_key),
         ]
