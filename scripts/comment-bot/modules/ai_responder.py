@@ -1,6 +1,6 @@
 """
 AI 回复生成模块
-使用阿里云百炼平台的模型
+使用阿里云百炼平台的 GLM-5 模型
 """
 import dashscope
 from dashscope import Generation
@@ -10,13 +10,13 @@ from typing import Optional
 class AIResponder:
     """AI 回复生成器"""
 
-    def __init__(self, api_key: str, model: str = "qwen-turbo"):
+    def __init__(self, api_key: str, model: str = "glm-5"):
         """
         初始化 AI 回复生成器
 
         Args:
             api_key: 阿里云百炼 API Key
-            model: 模型名称（qwen-turbo, qwen-plus, qwen-max 等）
+            model: 模型名称（glm-5）
         """
         self.api_key = api_key
         self.model = model

@@ -51,7 +51,7 @@ def main():
 
     ai_responder = AIResponder(
         api_key=config.dashscope_api_key,
-        model="qwen-turbo",  # 使用阿里云百炼的 qwen-turbo 模型
+        model="glm-5",  # 使用阿里云百炼的 GLM-5 模型
     )
 
     classifier = CommentClassifier(ai_responder=ai_responder)
