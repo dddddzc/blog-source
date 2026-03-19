@@ -33,23 +33,26 @@ class AIResponder:
 
         Args:
             prompt: 提示词
-            enable_search: 是否启用联网搜索
+            enable_search: 是否启用联网搜索（GLM-5 不支持此参数）
             max_tokens: 最大生成 token 数
 
         Returns:
             生成的回复文本
         """
         try:
+            # GLM-5 需要使用 message 格式
             response = Generation.call(
                 model=self.model,
-                prompt=prompt,
-                enable_search=enable_search,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
                 max_tokens=max_tokens,
-                result_format="text",
+                result_format="message",
             )
 
             if response.status_code == 200:
-                return response.output.text.strip()
+                # message 格式返回的是 choices 列表
+                return response.output.choices[0].message.content.strip()
             else:
                 raise Exception(f"API 调用失败: {response.code} - {response.message}")
 
