@@ -82,7 +82,6 @@ class AIResponder:
 ## 背景信息
 - 博客作者：{blog_author}
 - 博客地址：https://dddddzc.github.io
-- 你的身份：博客作者的 AI 助手
 
 ## 相关文章内容
 {related_posts if related_posts else "暂无相关文章"}
@@ -91,17 +90,18 @@ class AIResponder:
 {comment}
 
 ## 回复要求
-1. 语气友好、专业
+1. 语气友好、专业，像朋友一样自然交流
 2. 如果问题在文章中有答案，优先引用文章内容
-3. 如果需要补充信息，可以引用搜索结果
+3. 如果需要补充信息，可以提供相关建议
 4. 如果不确定答案，诚实说明并建议读者查阅其他资源
-5. 回复控制在 200 字以内
+5. 回复控制在 150 字以内
 6. 使用中文回复
-7. 回复开头说明你是 AI 助手
 
-请直接输出回复内容，不要包含其他说明。"""
+直接输出回复内容，不要有任何开场白或自我介绍。"""
 
-        return self.generate_response(prompt, enable_search=True, max_tokens=300)
+        reply = self.generate_response(prompt, enable_search=True, max_tokens=300)
+        # 添加 Bot 签名
+        return f"{reply}\n\n---\n*By Bot*"
 
 
 # 用于测试
