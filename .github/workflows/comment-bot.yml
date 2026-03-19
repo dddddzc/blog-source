@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r scripts/comment-bot/requirements.txt
+          pip install -r .github/comment-bot/requirements.txt
 
       - name: Run comment bot
         env:
@@ -41,4 +41,4 @@ jobs:
           DISCUSSION_CATEGORY_ID: DIC_kwDORgI73s4C3201
           BOT_MODE: ${{ github.event.inputs.dry_run == 'true' && 'dry-run' || 'production' }}
         run: |
-          python scripts/comment-bot/main.py
+          python .github/comment-bot/main.py
